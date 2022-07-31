@@ -2,15 +2,22 @@
 
 import config
 import telebot
+import emoji
 from telebot import types
-import random
 
 bot = telebot.TeleBot(config.TOKEN)
 
-@bot.message_handler(commands=['start', 'end'])
-def start(message):
-    bot.send_message(message.chat.id, '<b>Тексты с описанием товара и тезисы для инфографики</b>', parse_mode="HTML")
-    bot.send_message(message.chat.id, 'Утп (если есть)\nкраткое описание, главные преимущества, состав, материалы и прочая важная информация о товаре')
+
+
+@bot.message_handler(commands=['start'])
+def cmd_start(message):
+    markup = types.InlineKeyboardMarkup()
+    btn_my_site = types.InlineKeyboardButton(text="Нажми меня", url='https://forms.gle/e6h2suKgn4LgWV6g7')
+    markup.add(btn_my_site)
+    bot.send_message(message.chat.id,
+                     "Пожалуйста, заполните <b>техническое задание\nна разработку дизайна карточек товара</b> по ссылке:",
+                     parse_mode="HTML", reply_markup=markup)
+
 
 
 
