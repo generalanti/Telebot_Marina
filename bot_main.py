@@ -1,24 +1,35 @@
 # --*-- encoding: utf-8 --*--
+from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import ContentType, Message
+from aiogram_dialog import DialogManager, ChatEvent
+from aiogram_dialog.widgets.kbd import Checkbox, ManagedCheckboxAdapter
+from aiogram_dialog.widgets.text import Const
 
-import config
-import telebot
-import emoji
-from telebot import types
+API_TOKEN = '5342176536:AAEknzzBVOeMu31IaPUogLs-98cpDFnPjYA'
 
-bot = telebot.TeleBot(config.TOKEN)
-
-
-
-@bot.message_handler(commands=['start'])
-def cmd_start(message):
-    markup = types.InlineKeyboardMarkup()
-    btn_my_site = types.InlineKeyboardButton(text="Нажми меня", url='https://forms.gle/e6h2suKgn4LgWV6g7')
-    markup.add(btn_my_site)
-    bot.send_message(message.chat.id,
-                     "Пожалуйста, заполните <b>техническое задание\nна разработку дизайна карточек товара</b> по ссылке:",
-                     parse_mode="HTML", reply_markup=markup)
+bot = Bot(token=API_TOKEN)
+dp = Dispatcher(bot)
 
 
+@dp.message_handler(content_types=[ContentType.NEW_CHAT_MEMBERS])
+async def new_members_handler(message: Message):
+    new_member = message.new_chat_members[0]
+    await bot.send_message(message.chat.id, f"Добро пожаловать, {new_member.mention}")
+
+@dp.message_handler(commands=['start'])
+async def send_welcome(message: types.Message):
+    await message.reply("Hello world!")
 
 
-bot.polling(none_stop=True)
+@dp.message_handler(commands=['help'])
+async def send_welcome(message: types.Message):
+    await message.reply("Чем я могу помочь?")
+
+
+@dp.message_handler()
+async def echo(message: types.Message):
+    await message.answer(message.text)
+
+
+if __name__ == '__main__':
+    executor.start_polling(dp, skip_updates=True)
